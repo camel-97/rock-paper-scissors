@@ -1,101 +1,103 @@
-//wrapping game in a play game function. so all logic is defined
-//JS hits the end and runs the function top to bottom. 
-//play game at the bottom has already been called, so it's only by actively 
-//running the playgame() function at the play again prompt that it runs the 
-//function again.
-function playgame() {
-console.log('Lets play Rock Paper Sissors! \n\nHow about best of 5?');
+let humanscore = 0;
+let computerscore = 0;
+const maxscore = 3;
 
-//we've setup a function called 'getrandomint'
-//we've returned a number either 1, 2, or 3
-//Math.floor rounds our math.random number to nearest integer.
-//alone, this would always be 0, so we times our number between 0-1, by 3
-//now we have a number either 0, 1, or 2, so we add 1 at the end.
+const taunt = [
+    "You're predictable.",
+    "Is that all you've got?",
+    "Maybe try guessing better.",
+    "Computer supremacy confirmed.",
+    "Thanks for the free win!"
+];
+
+const output = document.getElementById("output");
+
 function getrandomInt() {
     return Math.floor(Math.random()*3)+1;
 }
-//Created a function, with the parameter being a number
-//We've mapped integers, to words; words is an object. 
-//upon the return, we are saying return the number but mapped to the 
-//assosiated word
 function numtoword(number) {
     const words = {
         1: "rock",
         2: "paper",
         3: "scissors"
-    }
-    return words[number];
+    } 
+   return words[number];    
 }
-//Creation of 5x iteration. i = 1, everything is within curly brackets there after. 
-let humanscore = 0;
-let computerscore = 0;
-for (let i = 1; i <= 5; i++){
-    
-    console.log(`\nRound ${i}`);
 
-    //prompting user to enter a word, this will be human choice.
-    //mapping this word to be a number
-    //unsure whether to use numbers or strings in working out the winner
-    let humanchoice = prompt("choose rock, paper, or scissors.").toLowerCase();
-        const choicemap = {
-                rock: 1,
-                paper: 2,
-                scissors: 3
-        }
-    // computernumber = the random number
-    // computer word = random integer mapped through number to word function
-    const computernumber = getrandomInt()
-    const computerword = numtoword(computernumber);
-    //additional not-true condition to restart the round upon invalid input
-        if (!choicemap[humanchoice]) {
-            console.log("silly goose, that's an invalid input, replay the round");
-            i--
-            continue;
-        }
+function getResult(computerchoice, humanchoice){
+    if (computerchoice === humanchoice) return "tie";
+    if ((humanchoice === "rock" && computerchoice === "scissors") ||
+        (humanchoice === "paper" && computerchoice === "rock") ||
+        (humanchoice === "scissors" && computerchoice === "paper")
+    ) return "win";
+    else 
+    return "lose";
+}
 
-    //printing the choices made by user and computer
-        console.log(`You chose ${humanchoice}, & the computer chose ${computerword}`);
-      
-    //conditions for each outcome, continuing and minus 1 from i for tie.   
-    let result;
-        if (choicemap[humanchoice] === computernumber){
-            result = 'TIE';
-            console.log('Ahhhh, you both said the same thing, replay the round!')
-            i--;
-            continue;
-        } else if (
-            (choicemap[humanchoice] === 1 && computernumber === 3) ||
-            (choicemap[humanchoice] === 2 && computernumber === 1) ||
-            (choicemap[humanchoice] === 3 && computernumber === 2)
-        ) {
-            result = 'YOU WIN!';
-            humanscore++
-        } else {
-            result = 'YOU LOSE'
-            computerscore++
-        }
-    //display of current scores and result
-    console.log(result);
-    console.log(`your score = ${humanscore}`);
-    console.log(`computer score = ${computerscore}`)
+function playRound(humanchoice) {
+    const computernumber = getrandomInt();
+    const computerchoice = numtoword(computernumber);
+    const result = getResult(humanchoice, computerchoice);
 
-    //Early Win conditions
-    if (humanscore === 3) {
-        console.log("\nYOU WON THE GAME!");
-        break;
-        }
-    if (computerscore ===3) {
-        console.log("\n YOU LOST, BETTER LUCK NEXT TIME!");
-        break;
-        }
+
+    if (result === "tie"){
+        output.textContent = `Tie, Both chose ${humanchoice}. Try Again!`;
+        return;
     }
-//play again option
-let playagain = prompt("Do you want to play again? (yes or no)").toLowerCase();
-    if (playagain === "yes") {
-    playgame()
+    if (result === "win"){
+        humanscore++;
+        output.textContent = `You chose ${humanchoice}, and the computer chose ${computerchoice}. You win this round!`;
+        
     }
-    else {
-    console.log("No Worries, Thanks for Playing");
+    if (result === "lose"){
+        computerscore++;
+        const randomTaunt = taunt[Math.floor(Math.random() * taunt.length)];
+        output.innerHTML = `You chose ${humanchoice}, and the computer chose ${computerchoice}. You lose this round!<br><em>${randomTaunt}</em>`;
+    }
+
+    updateScore();
+
+    if (humanscore === maxscore || computerscore === maxscore){
+        endGame();
     }
 }
-playgame();
+
+function updateScore(){
+    document.getElementById("score").textContent = `You: ${humanscore} | Computer: ${computerscore}`
+}
+
+function endGame(){
+    const winner = humanscore === maxscore ? "YOU WIN!" : "YOU LOSE!";
+    output.innerHTML += `<br><strong>GAME OVER - ${winner}</strong>`;
+    document.getElementById("choice-buttons").innerHTML = "";
+
+    if (humanscore === maxscore) {
+        confetti({
+            particleCount: 100,
+            spread: 70,
+            origin: { y: 0.6 }
+        });
+    }
+}
+
+const startButton = document.querySelector("#startgame");
+const startButtonContainer = document.querySelector("#start-button-container");
+startButton.addEventListener("click", () => {
+    startButtonContainer.innerHTML = "";
+    document.getElementById("choice-buttons").innerHTML =` 
+        <button class="choice" data-choice="rock">Rock</button>
+        <button class="choice" data-choice="paper">Paper</button>
+        <button class="choice" data-choice="scissors">Scissors</button>
+        `;
+
+humanscore = 0;
+computerscore = 0;
+updateScore();
+document.getElementById("output").textContent = "Choose your Weapon!";
+}); 
+
+document.getElementById("choice-buttons").addEventListener("click", (e) => {
+    if (e.target.classList.contains("choice")) {
+        playRound(e.target.dataset.choice);
+    }
+});

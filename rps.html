@@ -4,23 +4,27 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Rock Paper Sissors</title>
-    <script src="rps.js"></script>
+    
     <link rel="stylesheet" type="text/css"  href="rps.css">
+    <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
 </head>
 <body>
-    <!--pseudocode for html-->
-    <!--firstly, this game is to be played in the console, but this may be changed going forward-->
-    <!--Here, is pseudo for the html-->
-    <!--Header, and title for the game-->
-    <!--Are you ready to play? Button to initiate the game-->
-    <!--3 options, rock paper sissors, presented with img of each-->
-    <!--Maybe a 5 second timer for choice?-->
-    <!--Display both revealed options-->
-    <!--If draw, game resets-->
-    <!--Display win or loose-->
-    <!--points scored is updated-->
-    <!--game continues best of 5 rounds-->
-    <!--Winner declared-->
-    <!--Option to play again-->
+    <div class="gamecontainer">
+        <div class="headercontainer">
+            <div class="header">Rock Paper Scissors!</div>
+            <div class="description">Play best of 5 rounds against the computer, 
+                and see who comes out on top.</div>
+            <div id="start-button-container">
+                <button id="startgame">Start Game</button>
+            </div>
+            <div id="choice-buttons"></div>
+            <div id="output"></div>
+            <div id="score"></div>
+        </div>
+    </div>
+    <script src="rps.js"></script>
 </body>
+
+
 </html>
